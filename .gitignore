@@ -1,0 +1,3 @@
+# Ignore Vimtex Artifacts
+*.synctex.gz
+*.bbl
