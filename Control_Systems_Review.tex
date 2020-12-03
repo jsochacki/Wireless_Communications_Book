@@ -1,0 +1,471 @@
+\documentclass{article}
+
+\usepackage{xcolor}
+
+% \usepackage[printwatermark, textmark=test]{xwatermark}
+%\watermarksetup{fontfamily=bch,color=gray!25,textmark=DRAFT, angle=45,scale=0.8,xcoord=0,ycoord=0 }
+
+\usepackage[papersize={8.5in, 11in},margin=0.1in]{geometry}
+\usepackage{hyperref}
+\usepackage{titlecaps}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{listings}
+%No indenting
+\setlength{\parindent}{0pt}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{decorations.text}
+\usetikzlibrary{arrows}
+\usetikzlibrary{fit}
+\usetikzlibrary{backgrounds}
+\usepackage{helvet}
+
+\newif\ifEvenRow
+\EvenRowfalse
+
+\newenvironment{Solution}{
+\begin{tcolorbox}
+\color{purple}
+\textbf{Solution:}
+}
+{
+\end{tcolorbox}
+\ignorespacesafterend
+}
+
+\newcommand{\RatingBase}[2]{\textcolor{#1}{{\fontfamily{phv}\selectfont\textbf{#2}}}}
+\newcommand{\Easy}{\RatingBase{green!50!black!50}{EASY}}
+\newcommand{\Moderate}{\RatingBase{yellow!50!black!50}{MODERATE}}
+\newcommand{\Advanced}{\RatingBase{red!50!black!50}{ADVANCED}}
+
+\begin{document}
+\title{Control Systems Interview Questions}
+\maketitle
+
+\begin{tabular}{ll}
+\Easy{} &Advanced undergraduate / First semester masters\\
+\Moderate{} &Masters\\
+\Advanced{} & Advanced Masters / Ph.D.\\
+\end{tabular}
+\subsection{Question} \Moderate{}
+Your organization has enlisted your help in designing a control system for a new airborne platform.  What would be your first tasks as a control systems engineer?  Outline the process from beginning to end.
+
+\subsection{Question} \Easy{}
+What would be potential concerns you would raise if the system were open-loop unstable?  How would this change your approach?
+
+\subsection{Question} \Moderate{}
+At what point would you start performing the mathematical control law design?  What are the required inputs?  Where or how do you get them?  What measurements do you require prior to control design?  What considerations do you need ot make when you collect and then analyze those measurements?  How do you evaluate your control system implementation?
+
+\section{Linear Systems}
+\subsection{Question} \Easy{}
+Assuming $a >> b $, $a,b > 0$ draw the bode plot (gain and phase) for:
+
+\begin{equation}
+H(s) = \frac{s-b}{s+a}
+\end{equation}
+
+Failing that, ask for $H(s) = \frac{a}{s+a}$, and then $H(s) = \frac{s+b}{s+a}$
+\subsection{Question} \Easy{}-\Moderate{}
+Describe the effect of a right-half-plane zero on a system.  How does it impact your control design?  What is the behavior of a system with a low frequency right-half-plane zero such as $H(s) = 10\frac{s-1}{s+10}$ in response to a unit step input?
+
+
+\subsection{Question} \Easy{}
+Describe how a root locus is used.  Draw the root locus for 
+\begin{equation}
+H(s) = \frac{(s+1)(s-5)}{(s+5)(s+10)}
+\end{equation}
+
+\Easy{} Where on this root locus would your want your poles?
+
+\begin{Solution} 
+Along $\pm 45\deg$ line from origin (Where $\zeta=0.707$).
+\end{Solution}
+
+
+\subsection{Question} \Easy{}
+Draw any bode plot for a linear system, and identify the gain margin and phase margin.  Why are they important? 
+
+\Easy{}-\Moderate{} Do the same for a nyquist plot.  It can be  a different system than above.
+
+\subsection{Question} \Easy{}
+Given a state space system
+\begin{align}
+\dot{x}&=Ax + Bu,  &A\in\mathcal{R}^{n\times n}, B\in \mathcal{R}^{n \times m} \\
+y &= Cx,  &C \in \mathcal{R}^{p \times  n}
+\end{align}
+How many outputs does the system have?
+How many states does the system have?
+How many inputs does the system have?
+How are the system poles calculated (assume linear time invariant)?
+\begin{Solution}
+Look at the sizes of the C matrix for outputs:$p$ outputs, 
+
+Look at the size of the A matrix for states: $n$ states, 
+
+Look at the size of the B matrix for inputs: $m$ inputs.
+
+Poles are the eigenvalues of the A matrix.
+\end{Solution}
+
+\Easy{}
+Create a new state $\xi$ and augment it to the plant so that $\xi = \int y dt$.  Add this new state as an output.  What are the new state space equations?
+
+\newcommand{\VectorJF}[1]{\ensuremath{\left[\begin{matrix}  #1 \end{matrix}\right]}}
+\begin{Solution}
+Diagonally augment an integrator plant to the first equation, $\dot{\xi}=y = Cx$.  Add an output and use the identity matrix to output the second state, $y_i=\xi$.  ($\mathbb{I}_p$ is $p \times p$ identify matrix) Integrator augmentation is a standard procedure in control design with LQR.
+	\begin{align}
+		\VectorJF{\dot{x} \\ \dot{\xi}}&=\VectorJF{A & 0 \\ C & 0}\VectorJF{x\\ \xi} + \VectorJF{B\\0} u,  &A\in\mathcal{R}^{n\times n}, B\in \mathcal{R}^{n \times m} \\
+		\VectorJF{y\\ y_i} &= \VectorJF{C & 0\\ 0 & \mathbb{I}_p}\VectorJF{x\\ \xi},  &C \in \mathcal{R}^{p \times  n}
+	\end{align}
+\end{Solution}
+\Easy{} What are the new pole locations that were added to the system above?
+\begin{Solution}
+	All new poles are at the origin.  Logical approach: A set of integrators were added to copies of the output without feedback.  Integrators have poles at the origin.  Mathematical approach: Can also see from the new (augmented) $A$ matrix, that there are some zero eigenvalues there.  (Augmented A matrix is block-wise lower triangular.  Eigenvalues of new system are:  $eig(A) \cup eig(0_p)$, where $0_p$ is a matrix of zeros of size $p\times p$)
+\end{Solution}
+
+\subsection{Question}
+Given a state space system
+\begin{align}
+\dot{x}&=Ax + Bu,  &A\in\mathcal{R}^{n\times n}, B\in \mathcal{R}^{n \times m} \\
+y &= Cx,  &C \in \mathcal{R}^{p \times  n}
+\end{align}
+
+\Easy{} You are a control systems engineer evaluating a system.  You perform the following calculation.  What are you testing for?
+
+\begin{equation}
+rank \left(
+\begin{matrix}
+B  &  AB &  A^2B & \cdots  & A^{n-1}B 
+\end{matrix}
+\right )  = n
+\end{equation}
+What is the implication of failing to meet this criteria?
+
+\begin{Solution}
+Controllability.  You cannot drive all the states (or place all of the system poles). 
+\end{Solution}
+
+
+\Easy{} You are a control systems engineer evaluating a system.  You perform the following calculation.  What are you testing for?
+\begin{equation}
+rank \left (
+\begin{matrix}
+C\\ C A\\  C A^2\\ \vdots \\C A^{n-1}
+\end{matrix}
+\right )= n
+\end{equation}
+What is the implication of failing to meet this criteria?
+
+\begin{Solution}
+Observability.  You will not be able to use the output to determine the value of the states.  Some of them are unobservable.
+\end{Solution}
+
+
+\subsection{Question}
+\Easy{} What is a state observer?
+
+\begin{Solution}
+A dynamic system that reconstructs  state values from the measured inputs and outputs of a system and the state space equations of the system under observation.
+\end{Solution}
+\subsection{Question}
+\Moderate{}-\Easy{} Write the equations or show the structure for a continuous-time Kalman filter observing a linear plant.  You can assume infinite-time-horizon.
+
+\begin{Solution}
+$\dot{\hat{x}}=A \hat{x} + B u + L(y-\hat{y})$ where $\hat{y} = C\hat{x}$ and $L$ is a matrix.
+
+Additional info: $L$ is calculated using the cost function.
+\begin{equation}
+J = \int{\tilde{x}^\top W\tilde{x} + y^\top V y dt}
+\end{equation}
+where $\tilde{x} = \hat{x}-x$ and $\tilde{y} = \hat{y}-y$, $W\ge 0$, $V>0$.
+\end{Solution}
+
+\section{Optimal Control}
+\subsection{Question} \Moderate{}-\Easy{}
+Are you familiar with LQR  (Linear Quadratic Regulator)? If so, what is the cost function?  
+
+\subsection{Question}
+\Easy{} Given the LQR cost function \\
+
+$J(x(t),u(t)) = \int_{0}^{t}{ x(t)^\top Q x(t) + u(t)^\top R u(t)} dt$, \\
+
+describe the form of the synthesized controller (is it time-varying, what is the structure of the synthesized control law (i.e., a controller with states?  a matrix?  a scalar?)).
+
+\Easy{} What happens to the system trajectory if one increases the value of $R$ by multiplying it by 1000?  
+
+\Easy{} What if one then (keeping the new $R$) multiplies $Q$ by 1000?
+
+
+\begin{Solution}
+Initially mulitplying $R$ by 1000 causes the penalty on the use of the control input $u$ to increase, causing it to be used less.  This typically causes the states to converge slower.  Once $Q$ is also multiplied by 1000, the solution will exactly match the original solution since both matrices are again weighted equally and the increased penalty/weight does nothing (in fact, it can be factored out of the integral), and with no other terms, it does not change the minimum.
+\end{Solution}
+
+\subsection{Question}
+\Moderate{}-\Advanced{} Are you familiar with $\mathcal{H}_\infty$  (pronounced H-Infinity) control?  If so, describe the control problem formulation?  Describe the form of the synthesized control law.  
+
+What is the structured singular value (SSV)?  What is it a measure of (qualitative description preferred)? 
+ 
+\subsection{Question} \Advanced{}
+Are you familiar with Euler-Lagrange or Calculus of Variations?
+
+What is a functional?
+\begin{Solution}
+A functional maps a function to a scalar, and is used in constructing cost functions and optimal control problem formulations.
+\end{Solution}
+
+
+Write a typical Hamiltonian $\mathscr{H}(x(t), u(t), p(t),t)$ (some times $\lambda$ is used instead of $p$) for the cost function $J=\int{ g(x) dt}$ applied to a system $\dot{x}= f(x,u,t)$.  Alternatively, write the augmented cost function that includes the system dynamics (dynamic constraints).  
+
+\begin{Solution}
+$\mathscr{H}(x,p,t,u) =g(x,p,t,u) + f(x,u,t)^\top p(x,p,t,u)$, or simply $\mathscr{H} = g+f^\top p$
+
+If the candidate writes the augmented cost function, it will be:
+
+$J_a = \int{g(x,p,t,u) + p^\top (\dot{x}-f(x,u,t))}dt$
+\end{Solution}
+
+
+Assuming the optimization is over all future time (infinite time horizon), what is the known final value of the Lagrange multipliers assuming there are no other constraints on the system?
+\begin{Solution}
+$p(t_f)=0$
+\end{Solution}
+
+
+\Advanced{} Oftentimes, the application of Euler-Lagrange results in a split (two-point) boundary value problem.  What is this?  What methods can you use to solve it?
+
+\begin{Solution}
+Optimal control produces a set of partial differential equations from which differential equations are determined.  However, the differential equations generally have boundary conditions for some states at the start and different states at end of the time, resulting in "split boundary value problem" where one cannot simply numerically integrate to get solution (you don't have all the states known at one point, so you can't integrate neither forwards nor backwards).  
+
+One solution (shooting method) is to guess. Based on your answer, you solve an embedded optimization problem to  iteratively guess the unknown states at $t_0$ and numerically integrate the differential equations using those guesses for states you don't know and actual values for states you know.   Integrating produces the final value at $t_f$. Using the value of the states you do know at $t_f$ as a reference, you can use gradient descent to force the final value ( caused by the guesses of the initial conditions) to approach the known values of those states at $t_f$ by iteratively adjusting the unknown initial conditions. 
+
+Usually you know the system states at $t_0$ and the Lagrange multipliers (co-states) at $t_f$.  Depending on the specific optimization problem constraints, you may either know the states at $x_f$ or the value of $t_f$ itself, but not always both.  (You may also just know it has to land on a surface such as $m(x(t_f), p(t_f), t_f) = 0$, but not necessarily where on that surface or the value of $t_f$ itself)
+\end{Solution}
+
+
+
+\subsection{Question} \Advanced{}
+Describe Pontryagin's Maximum Principle (or Minimum Principle).  Why is this important?
+
+
+
+\begin{Solution}
+PMP states that the optimal control always minimizes the Hamiltonian.  For example, in Bang-Bang control, when the optimal control becomes singular or ambiguous as to which one to pick, evaluate the Hamiltonian and use the control decision that results in the smallest value.  Usually arises when limits are placed on the control output.  (Note that while the concept of the PMP sounds easy, its application is found in problems that are difficult).
+\end{Solution}
+
+\section{Nonlinear Systems} \Moderate{}-\Easy{}
+Define Lyapunov stability. 
+
+
+\begin{Solution}
+Given an arbitrarily small, but specified value $\epsilon$, it is possible to pick a value $\delta$ such that system trajectories starting in a ball of radius $\delta$ never leave the specified ball of radius $\epsilon$ no matter how small or large $\epsilon$ is chosen to be.  (If I pick a smaller value for $\epsilon$, I can in turn pick an even smaller value for $\delta$ in response to keep the statement true, and I can do this for any $\epsilon$ chosen).
+
+A system that always goes out to 5 and then decays to the origin no matter what initial conditions are picked is not Lyapunov stable because I can pick $\epsilon$ less than 5, and no choice of $\delta$ will prevent the system from exceeding $\epsilon$ since $\epsilon < 5$ and the system always goes to 5 before decaying to the origin.
+\end{Solution}
+
+\Moderate{}-\Easy{} Describe a lypaunov function and the criteria that is used to determine stability using it?
+\begin{Solution}
+A Lyapunov function is a positive-definite function of the states and time that results in a positive scalar.  The time-derivative of a Lyapunov function is negative definite.  If one can find a Lyapunov function satisfying these conditions for an autonomous system, then that autonomous system is Lyapunov stable.
+
+That is:
+given  $\dot{x}=f(x,u,t)$,
+\begin{equation}
+V(x,t) > 0, \forall x \ne {0}
+\end{equation}
+\begin{equation}
+V(x,t) = 0,  x = {0}
+\end{equation}
+\begin{equation}
+\dot{V}(x,t) < 0,  x \ne {0}
+\end{equation}
+If $V$ exists, then $f$ is Lyapunov stable.  Note that if a given candidate $V$ if found to have a derivative that is not negative definite, it does not imply the system $f$ is unstable, it simply means you did not succeed in finding a Lyapunov function for $f$ and that you need to guess a different $V$.
+\end{Solution}
+
+\Moderate{} Describe LaSalle's Invariance Principle.  Why is it important?  What is the critical assumption when applying LaSalle to a system?
+
+\begin{Solution}
+LaSalle states that, given a domain $\mathcal{D}$,  if you can find a set of points $M$ where a function $V=0$, and you can find a set of points within $M$ called $E$ that are positively invariant subsets of $M$, then all solutions starting in $\mathcal{D}$ converge to $E$ as $t\rightarrow \infty$.
+\vskip 1mm
+This is useful when you cannot guarantee the negative definiteness of the time derivative of a Lyapunov function candidate (and may only get only negative semidefiniteness), but you can show that no solution can stay identically in the set $\dot{V}=0$ except the origin, then the origin is the only stability point in the domain $\mathcal{D}$, even though $\dot{V}$ may be $0$ at other points in $\mathcal{D}$ (V will ultimately leave those points and continue to decrease, implying they are not stable points).  Oftentimes this is proven by evaluating higher order time derivatives of V and showing at least one of them is nonzero where $\dot{V}=0$ away from the origin.
+\vskip 1mm
+To use LaSalle, the system must be autonomous, and time-invariant.
+\end{Solution}
+
+\subsection{Question} \Moderate{}-\Easy{}
+Given the following equation:
+\begin{equation}
+\dot{x}= a x^2 + x u
+\end{equation}
+where $u$ is a real-valued scalar control input, using the following Lyapunov function $V(x)$, design a stabilizing controller that brings $x$ to zero.  Assume $x$ can be measured and that $a$ is a known positive scalar.
+
+\begin{equation}
+V(x) = \frac{1}{2}x^2
+\end{equation}
+
+\begin{Solution}
+Calculate $\dot{V}(x)$.  A Lyapunov funcion should be positive definite with a negative definite time derivative.  Apply chain rule.
+\begin{equation}
+\dot{V}(x)=x\dot{x}=x(ax^2+xu) =ax^3+x^2u< 0
+\end{equation}
+Select u to make candidate Lyapunov function negative definite.
+\begin{equation}
+ u=-ax + -k  \rightarrow \dot{V}(x)=ax^3+x^2(-ax-k)=-kx^2<0
+\end{equation}
+Using $u=-ax-k$, for any $k>0$ the system is stabilized around the origin because Lyapunov function time derviative is negative definite.
+\end{Solution}
+Is the solution exponentially stable?
+\begin{Solution}
+Yes  because the lyapunov function derivative can be bounded by a linear function of the Lyapunov function itself.  ($\dot{V}(x) < \alpha V(x)$, in this case $\alpha \le k$,).  Note that depending on the control law chosen in previous step, the canddiate may or may not make an exponentially stable solution, just may be asymptotic.  Looking for their knowledge of the criteria for exponential stability.
+\end{Solution}
+
+
+\subsection{Question}
+\Moderate{} Describe exponential stability and how it is different from asymptotic stability.
+
+\Easy{} What is a limit cycle?
+
+\Moderate{}-\Easy{} What is an anti-windup controller?  Describe its structure?  Why is it used?
+
+\Moderate{} What is the effect of a bounded persistent (but otherwise unknown) disturbance $d(t)$ on the state of the system ($|d(t)| < k \hspace{1mm}\forall t$).  Assume the disturbance enters at the same point as the control input and cannot be predicted.  A qualitative description is sufficient, but Lyapunov-based analysis can also suffice (qualitative preferred).
+\begin{Solution}
+System trajectory will be constrained to a ball centered at the origin.
+\vskip 2mm
+Lyapunov-based analysis:
+<do later>, Show that the system is bounded because its trajectories enter a forward-invariant set constrained defined by exciting the system with the disturbance.  (Lyapunov function level set with negative-definite derivatives for regions of state space outside the level set is a forward-invariant set).  The smallest level set with negative-definite derivative defines the ball that contains the system trajectory, and it will be a function of the control gain and disturbance amplitude bound.
+\end{Solution}
+
+\subsection{Question} \Moderate{}
+Are you familiar with MRAC (Model Reference Adaptive Control)?  Describe the control design approach (what are the components of the MRAC control laws)?  What are the assumptions necessary?
+
+\Moderate{} As related to MRAC, what can happen if the Lyapunov function derivative is only negative semidefinite?  What happens if the parameter estimates vanish from an otherwise negative definite Lyapunov function derivative?  How might this impact the control output?  
+
+\Moderate{}-\Advanced{} What can be done to ensure the negative definiteness of the Lyapunov function?  (hint: projection)
+
+\section{System Measurement}
+\subsection{Question}
+\Easy{} How do you measure the frequency response of an LTI (linear time invariant) SISO (single input-single output) system to which you can control the input and measure the output?
+
+How does this change when you are measuring the transfer function (frequency response) about an operating point for a nonlinear system?  What new challenges must you consider?
+
+\subsection{Question}
+\Easy{} You are tasked with identifying the frequency response of a continuous, but nonlinear system while it is operating .  Another engineer, not familiar with controls, recommends you apply an impulse to the system and take the spectrum of the output as the frequency response of the system.  While theoretically valid, describe the potential pitfalls of this approach.
+
+Repeat the same situation, but measure the frequency response using a swept sine-wave.  What are the benefits and what are the pitfalls?
+
+\section{Controller Realization}
+\subsection{Question}
+\Easy{} Describe your experience in implementing control systems?  What sensors and actuators have you used?  What hardware did you use to implement your controller?  How did you model your sensors and actuators?  What non-ideal characteristics did you experience during your implementation?  
+
+Did you have real-time deadlines to consider?  What language did you implement the controller?
+
+What is the importance of real-time deadlines in control systems implementations?  What happens if they are violated?
+
+
+
+\subsection{Question}
+\Easy{} You are designing a control system in discrete time, and are sampling a continuous-time signal $y(t)$ at a fixed rate $T_s$.  The real-valued signal $y(t)$ has spectral content (e.g., a sine wave) at  a frequency of $\dfrac{0.7}{T_s}$.  When you look at the spectrum of the discrete-time signal, it  looks different than what you saw when you looked at the continuous-time signal due to this content.  What effect did you experience?   Draw an example showing the original and sampled signal?
+
+Describe ways you could change your system to avoid this phenomenon.
+
+\subsection{Question}
+\Easy{}-\Moderate{} You are designing a control system using an 8-bit analog-To-Digital converter that measures inputs, uses a processor to apply a first-order control law (a PI controller), and an actuator that implements the control action.  Your controller is a simple PI controller controlling a first-order linear system (an integrator).  When you run your controller, you measure the controlled system output using external equipment, and find that it is getting close to the set point, but not actually meeting the value, or producing a low-amplitude, but noticeable steady-state triangular wave.  Being an PI controller, you expected the error to go to zero.  What happened?
+
+\subsection{Question}
+How do you ensure that what you made in hardware matches what you intended to make when designing the hardware?
+
+\subsection{Question}
+You are implementing a state-space control law (Second order) described as
+
+\begin{equation}
+\left(\begin{matrix}
+ x_1(k+1) \\ x_2(k+1)
+\end{matrix}\right)
+= \left(\begin{matrix}
+a_{11} & a_{12} \\ a_{21} & a_{22}
+\end{matrix}\right)
+\left(
+\begin{matrix}
+ x_1(k) \\ x_2(k)
+\end{matrix}
+\right)
++
+ \left(\begin{matrix}
+b_{1}  \\ b_{2} 
+\end{matrix}\right)
+u(k)
+\end{equation}
+
+\begin{equation}
+y(k)
+= \left(\begin{matrix}
+c_{1} & c_{2}
+\end{matrix}\right)
+\left(
+\begin{matrix}
+ x_1(k) \\ x_2(k)
+\end{matrix}
+\right)
++
+d u(k)
+\end{equation}
+
+\Moderate{}-\Easy{} You write the following C or C++ code and notice some high-frequency content in your measured output that you did not expect.
+\begin{lstlisting}
+x1 = a11*x1 + a12*x2 + b1*u;
+x2 = a21*x1 + a22*x2 + b2*u;
+y  =  c1*x1 +  c2*x2  + d*u;
+\end{lstlisting}
+
+What went wrong (two things)?  How would you fix it.
+
+\begin{Solution}
+States are being used while they are being updated.  The actual value used to calculate \verb|x2| below is $x_1(k+1)$.
+Also, the output $y(k)$ is calculated using $x(k+1)$ instead of $x(k)$ since it is not calculated first.  Consequenty the solution produced (assuming the state update probelm is fixed) is closer to $y(k+1)$ instead of $y(k)$.
+\end{Solution}
+
+
+\subsection{Question}
+\Moderate{}-\Easy{}  Many times, a high-performance controller can be constructed using large control gains.  Describe some risks of using a high-gain controller.
+
+\begin{Solution}
+Control output saturation.  Noise sensitivity.  Instability due to control output saturation.
+\end{Solution}
+
+\subsection{Question}
+\Advanced{}-\Moderate{}  What is a diffeomorphism?  Why would you use one?
+
+\subsection{Question}
+\Advanced{}-\Moderate{}  What is a Lie Derivative?  Why would you use one as related to control theory?
+\begin{Solution}
+Input-State Linearization, Input-Output Linearization
+\end{Solution}
+
+\Advanced{}-\Moderate{}  What is a Lie Bracket?  Why would you use one as related to control theory?
+\begin{Solution}
+Determining involutivity (leading to controllability) for nonlinear systems.
+\end{Solution}
+
+
+\subsection{Question}
+\Advanced{}-\Moderate{}  What is Backstepping?
+
+\begin{Solution}
+This is the control engineering analog to the movie Inception. You design stabilizing controllers assuming you have the control inputs you need (using other system states as "control inputs" controlling this subsystem) and then backstep through an integrator out to the next level where you in turn control those "inputs" using the next level of controllers / collection of states and repeat until you reach real system inputs.  Note this is very different than cascaded loop design used in linear systems, although this description may make it sound similar.
+\end{Solution}
+
+\subsection{Question}
+\Advanced{} Why would one use adaptive backstepping (MRAC variation)?
+
+\begin{Solution}
+This is performing backstepping where you do not know all the coefficients or functions that couple the states together, and your backstepping passes through these states and is impacted by these unknown values/coefficients or functions.  In the MRAC variation, you use backstepping and MRAC to force each subsystem to behave like a reference model for that subsystem and then control the reference model.  Note this is very different than cascaded loop design or using singular perturbations or sliding mode control.
+\end{Solution}
+
+\subsection{Question}
+\Advanced{}-\Moderate{} Describe sliding mode control.
+
+
+
+\end{document}

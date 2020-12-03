@@ -1,0 +1,294 @@
+\part{Part 2}
+   \chapter{Diversity}
+      \section{Deep Fade Events}
+         \subsection{High SNR Performance}
+            The poor performance of wireless communications systems at high
+            SNRs when compared to wired communicaitons systems is due to deep
+            fades.
+            
+            \vspace{10pt}
+
+            \begin{center}
+               \begin{tabular}[c]{|w{c}{4cm}|w{c}{4cm}|}
+                  \hline
+                  \multicolumn{2}{|c|}{Comparison of Wired and wireless
+                  communications} \\
+                  \hline
+                  Wired Channel & Wireless Channel \\
+                  \hline
+                  $y=x+n$ & $y=hx+n$ \\
+                  $BER=Q(\sqrt{SNR})$ &
+                  $BER=\frac{1}{2}(1-\sqrt{\frac{SNR}{2+SNR})}$ \\
+                 \hline
+                 \end{tabular}
+            \end{center}
+
+            This can be seen why from the following analysis.
+
+            \subsubsection{Mathematical Simplifications}
+               Let us show why by making some mathematical simplifications for
+               the BER expression under high SNR.
+
+               \begin{center}
+               \begin{align}
+                  BER&=\frac{1}{2}\left(1-
+                  \sqrt{\frac{SNR}{2+SNR}}\right) \\[10pt]
+                     &=\frac{1}{2}\left(1-\frac{1}
+                  {\sqrt{1+\frac{2}{SNR}}}\right).
+               \end{align}
+               \end{center}
+
+               For high SNR we can see that $\frac{2}{SNR}$ is a
+               small value and we know that
+
+               \begin{center}
+               \begin{align}
+                  \frac{1}{\sqrt{1+x_{small}}} = 1-\frac{x_{small}}{2}.
+               \end{align}
+               \end{center}
+
+               Therefore we can arrive at the approximate equation for BER of a
+               wireless channel with a very high SNR.
+
+               \begin{center}
+               \begin{align}
+                     &\approx \frac{1}{2} \left(1- \left(1-
+                     \frac{1}{2}\frac{2}{SNR} \right) \right) \\[10pt]
+                     &\approx \frac{1}{2} \frac{1}{SNR}.
+               \end{align}
+               \end{center}
+
+               \subsubsection{Example 1}
+               Compute the bit error rate a wireless communication system at
+               $SNR_{dB}=20dB$.
+
+               \begin{center}
+               \begin{align}
+                  &20dB=10\log_{10}SNR \\[10pt]
+                  &\log_{10}SNR=2 \\[10pt]
+                  &SNR=10^{2}=10 \\[10pt]
+                  &BER=\frac{1}{2SNR} = \frac{1}{2*100} = 50*10^{-4}.
+               \end{align}
+               \end{center}
+
+               Note that the bit error rate achieved in a wired communication
+               system at this same SNR is only $7.8*10^{-4}$.
+
+               \subsubsection{Example 2}
+               Compute the SNR in dB of a wireless communication system for a
+               $BER=10^{-6}$ 
+
+               \begin{center}
+               \begin{align}
+                  &10^{-6}=\frac{1}{2SNR} \\[10pt]
+                  &SNR=\frac{1}{2*10^{-6}} = \frac{10^{-6}}{2} \\[10pt]
+                  &\implies SNR_{dB}
+                  =10\log_{10}\left(\frac{10^{-6}}{2}\right)\\[10pt]
+                  &=60\text{dB}-3\text{dB}=57\text{dB}.
+               \end{align}
+               \end{center}
+
+               Note that in a Wired Communication system, the SNR required for
+               this same BER is 13.6 dB.  This is because of the desrtuctive
+               interference that causes deep fades and is the results of
+               multipath propogation.
+
+               \subsubsection{Comparison Of High SNR Approximate Formula}
+
+               \begin{table}[htpb]
+               \begin{center}
+               \caption{Comparison of high SNR approximate BER formula for
+               Wired and Wireless Systems}
+               \label{tab:Comparison of high SNR approximate BER formula for
+               Wired and Wireless Systems}
+               \begin{tabular}[c]{|w{c}{4cm}|w{c}{4cm}|}
+                  \hline
+                  \multicolumn{2}{|c|}{Comparison of high SNR
+                                       approximate BER formula for
+                                       Wired and Wireless Systems} \\
+                  \hline
+                  Wireless System &
+                  $BER=\frac{1}{2}\left(1-\sqrt{\frac{SNR}{2+SNR}}\right)$
+                  $\approx \frac{1}{2SNR}$ \\
+                  \hline
+                  Wired System &
+                  $BER=Q\left(\sqrt{SNR}\right)$
+                  $\approx \exp^{-\frac{SNR}{2}} $\\
+                  \hline
+               \end{tabular}
+               \end{center}
+               \end{table}
+
+         \subsection{Probability of a Deep Fade Event}
+            Taking a look again at the wireless communications system channel
+            model $y=hx+n$.  Let us call $h$ the fading coefficient and $n$ the
+            noise.  Remember that we said $\|h\|^{2}P$ is the desired power at
+            the receiver and that $\sigma_n^{2}$ is the noise power at the
+            receiver.  If we look at the performance of the channel when the
+            noise power is greater than the desired power.
+
+            \begin{center}
+            \begin{align}
+               &\|h\|^{2}P=a^{2}P<\sigma_n^{2} \\[10pt]
+               &=a^{2} < \frac{\sigma_n^{2}}{P} \\[10pt]
+               \text{Since, } &\frac{P}{\sigma_n^{2}} = SNR \\[10pt]
+               &a<\frac{1}{\sqrt{SNR}}
+            \end{align}
+            \end{center}
+
+            So when $a<\frac{1}{\sqrt{SNR}}$ we say we have a deep fade event
+            as we can see that this will create very poor channel
+            performance.\\
+
+            \vspace{10pt}
+            \textbf{\emph{
+            Note, this is a little missleading since we are using the terms SNR
+            like it is the receive SNR as one would typically expect when
+            rather here it is strictly the transmit SNR so please make sure to
+            keep that in mind for the next paragraph and the prior paragraph.
+            It is the tx SNR since we are separating the fading coefficient
+            from the SNR power meaning that it is not receive SNR.
+            This is possibly even incorrect to just forget this section
+            "Probability of a deep fade event"\\}}
+
+            \vspace{10pt}
+
+            Since we also know that the probability distribution of a is
+            $f_A(a)=2a\exp^{-a^{2}}$, we can just calculate the probability of
+            a deep fade event by $P(a<\frac{1}{\sqrt{SNR}})$.  This is just the
+            integral of the pdf of a from 0 to a
+            $=\int_{0}^{\frac{1}{\sqrt{SNR}}}f_A(a)da$ and if we approximate
+            $\exp^{-a^{2}}\approx 1$ then we can say that
+            $P(a<\frac{1}{\sqrt{SNR}})=\frac{1}{SNR}$.  Noting also that
+            $BER=\frac{1}{2SNR}$ then we can see that $BER\sim \text{The
+            Probabililty of a deep fade event}$.  This shows that the poor
+            performance of a wireless system at high SNR is due to deep fade
+            events that arise from the multipath environment that allows for
+            destructive interference.
+
+            \vspace{10pt}
+
+            Adding diversity is one way to reduce the probability of a deep
+            fade event.
+
+            \section{Multiple Antenna Systems}
+
+            Below in Figure~\ref{fig:multiple-antenna-system} we can see
+            what a multiple antenna system coutld look like.  The system in
+            the image below is what is known as a single output multiple
+            input (MISO) system as the recevier has multiple inputs and the
+            transmitter has a single output.  From a very basic point of
+            view, this improves high SNR performance of the wireless system
+            as it is much less statistically likely for all channels to
+            experience a deep fade event simultaneously. \\
+
+               \begin{figure}[ht]
+                  \centering
+                  \incfig{chapter_2_multiple-antenna-system}
+                  \caption{Multiple Antenna System}
+                  \label{fig:multiple-antenna-system}
+               \end{figure}
+
+            Using the system in the figure as an example, If we have a
+            single transmit antenna and L receive antenna we can say
+            that the system has $L^{\text{th}}$ order diversity.
+      
+            \subsection{MISO System Model}
+               Lets now form the system model for the current example
+               system.
+
+               \begin{table}[htpb]
+               \begin{center}
+               \caption{Comparison Of SISO and MISO Systems}
+               \label{tab:Comparison Of SISO and MISO Systems}
+               \begin{tabular}[c]{|w{c}{4cm}|w{c}{4cm}|}
+                  \hline
+                  $y=hx+n$ & SISO Wireless System \\
+                  \hline
+                  $y_1=h_1x+n_1$ & \multirow{4}{*}{MISO Wireless System} \\
+                  $y_2=h_2x+n_2$ & \\
+                  $\vdots$ & \\
+                  $y_\text{L}=h_\text{L}x+n_\text{L}$ & \\
+                  \hline
+               \end{tabular}
+               \end{center}
+               \end{table}
+
+               An inspection of the MISO Wireless System makes it
+               evident that in fact it is easiest to think of the
+               quantities in vector form and represnt the equations as a
+               set of vector equations.
+
+               \begin{center}
+               \begin{align}
+                  \begin{bmatrix} y_1\\ \vdots\\ y_n \end{bmatrix}
+                  =\begin{bmatrix} h_1\\ \vdots\\ h_n \end{bmatrix}
+                   \begin{bmatrix} x\\ \vdots\\ x \end{bmatrix}
+                  +\begin{bmatrix} n_1\\ \vdots\\ n_n \end{bmatrix}
+                  \quad = \quad
+                  \begin{bmatrix} y_1\\ \vdots\\ y_n \end{bmatrix}
+                  =\begin{bmatrix} h_1\\ \vdots\\ h_n \end{bmatrix}
+                   x
+                  +\begin{bmatrix} n_1\\ \vdots\\ n_n \end{bmatrix}
+               \end{align}
+               \end{center}
+
+               \vspace{10pt}
+               Which is best written in matrix form as
+               $\overline{y}=\overline{h}x+\overline{n}$.
+
+               \subsubsection{Analysis of Receive Antenna Diversity System}
+
+                  We will see that the expected value of the noise at each
+                  receive antenna is $\sigma_n^{2}$.  This is the power of
+                  the noise or in other words it is the noise variance.
+                  \begin{center}
+                  \begin{align}
+                     &\overline{y}=\overline{h}x+\overline{n} \\[10pt]
+                     &E \left\{ \left| n_i(k)^{2} \right|  \right\} 
+                     =\sigma_n^{2}
+                  \end{align}
+                  \end{center}
+
+                    \paragraph{signal Detection}
+                    $y_1, y_2, \cdots , y_L $ are the singals received at
+                    the L receive antennas.  We can combine these receive
+                    signals in the following manner $w_1^{*}y_1+w_2^{*}y_2
+                    +\cdots+w_\text{L}^{*}y_\text{L}$
+                    then we are combining them in a weighted manner which
+                    we will call beamforming.  We will refer to
+                    $\overline{W}$ as the beamformer or beamforming matrix
+                    (when in matrix form).
+
+                    \begin{center}
+                    \begin{align}
+                       \overline{W}=&\begin{bmatrix} W_1\\
+                       \vdots\\ W_n \end{bmatrix} \\[10pt]
+                       \begin{bmatrix} W_1^{*}& \cdots&
+                       W_n^{*} \end{bmatrix}
+                       &\begin{bmatrix} y_1 \\ \vdots \\ y_n \end{bmatrix}
+                       =\overline{W}^{H}\overline{y}
+                    \end{align}
+                    \end{center}
+
+                    Since
+                    $\overline{W}^{H}\overline{y}$ and
+                    $\overline{y}=\overline{h}x+\overline{n}$
+                    , our beamformer output is
+                    $\overline{W}^{H}\left(\overline{h}x
+                    +\overline{n}\right)$.  Expanding that we can see that
+                    we have $\overline{W}^{H}\overline{h}x
+                    +\overline{W}^{H}\overline{n}$.  We will call
+                    $\overline{W}^{H}\overline{h}x$ the signal component
+                    and $\overline{W}^{H}\overline{n}$ the noise component.
+                    Therefore we have
+
+                    \begin{center}
+                    \begin{align}
+                    SNR=\frac{\text{Signal Power}}{\text{Noise Power}}
+                    =\frac{\left|\overline{W}^{H}h\right|^{2}P}
+                    {E \left\{\left|\overline{W}^{H}\overline{n}\right|^{2}
+                    \right\}}.
+                    \end{align}
+                    \end{center}
+

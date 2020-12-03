@@ -1,0 +1,59 @@
+\documentclass[letterpaper, 10pt, titlepage, oneside]{book}
+\usepackage{systems_book}
+
+%Page order
+% This is one traditional page order for books.
+
+% Frontmatter
+%   Half-title
+%   Empty
+%   Title page
+%   Information (copyright notice, ISBN, etc.)
+%   Dedication if any, else empty
+%   Table of contents
+%   List of figures (can be in the backmatter too)
+%   Preface chapter
+% Mainmatter
+%   Main topic
+% Appendix
+%   Some subordinate chapters
+% Backmatter
+%   Bibliography
+%   Glossary / Index
+
+\setheaderandfooter{John Sochacki}
+
+\begin{document}
+
+\maketitleandtoc{Wireless Communications}{John Sochacki}{September 1st 2020}
+
+%Actual Content below
+\part{Preface}
+   Preface
+
+\renewcommand{\abstractname}{Preface}
+   This is the abstract \par
+
+%Items after this will get numbers when generated
+\mainmatter
+
+\part{Part 1}
+
+   \chapter{Chapter 1}
+      content
+      \section{Section 1}
+
+\import{./}{chapter_2.tex}
+
+\appendix
+\part{appendix info}
+   Appendix here \par
+
+\backmatter
+\part{Post Appendix}
+COntent here \cite{harris_multirate_book} \par
+
+\bibliographystyle{unsrt}
+\bibliography{bibliography}
+
+\end{document}

@@ -1,0 +1,86 @@
+\ProvidesPackage{systems_book}[10/29/2020 Version 0.0]
+
+% figure support
+\usepackage{import}
+\usepackage{pdfpages}
+\usepackage{transparent}
+\usepackage{xcolor}
+\usepackage{mathptmx} % For Times New Roman Font
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{amsmath} % For align
+\usepackage{array} % For tabular formatting
+\usepackage{multirow} % For multiple rows in one table entry
+%\usepackage{tabularx} % For tabular formatting
+\usepackage[justification=centering]{caption} %To get centered long captions
+\usepackage[nottoc]{tocbibind}
+
+\newcommand{\incfig}[2][1]{%
+    \def\svgwidth{#1\columnwidth}
+    \import{./figures/}{#2.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\definecolor{systemsblue}{RGB}{37,68,88}
+
+%Page order
+% This is one traditional page order for books.
+
+% Frontmatter
+%   Half-title
+%   Empty
+%   Title page
+%   Information (copyright notice, ISBN, etc.)
+%   Dedication if any, else empty
+%   Table of contents
+%   List of figures (can be in the backmatter too)
+%   Preface chapter
+% Mainmatter
+%   Main topic
+% Appendix
+%   Some subordinate chapters
+% Backmatter
+%   Bibliography
+%   Glossary / Index
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\setheaderandfooter}[1]
+{
+\setcounter{tocdepth}{7}
+%\pagenumberin{arabic}
+\pagestyle{fancyplain}
+\rhead{\fancyplain{pg \thepage}{pg \thepage}}
+\lhead{\fancyplain{#1}{#1}}
+\lfoot{\fancyplain{}{Section \thesection}}
+\cfoot{\fancyplain{Section \thesection}{}}
+\rfoot{\fancyplain{}{Chapter \thechapter}}
+}
+
+\renewcommand{\contentsname}{Table Of Contents}
+\renewcommand{\listfigurename}{Figures}
+\renewcommand{\listtablename}{Tables}
+
+\newcommand{\maketitleandtoc}[3]
+{
+\frontmatter
+   \title{#1}
+   \author{#2}
+   \date{#3}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\listoffigures
+\newpage
+
+\listoftables
+\newpage
+
+}
+\endinput
